@@ -8,8 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface ViewController : NSViewController
+@interface ViewController : NSViewController <NSCollectionViewDelegate,NSPopoverDelegate>
 
+@property (strong) IBOutlet NSCollectionView *collectionView;
+@property (nonatomic,strong) NSMutableArray *appArray;
+@property (strong) IBOutlet NSArrayController *arrayController;
 
 @end
 
