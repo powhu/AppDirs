@@ -10,7 +10,6 @@
 #import "AppInfo.h"
 #import "AppDetailVC.h"
 
-
 @implementation ViewController
 
 - (void)viewDidLoad

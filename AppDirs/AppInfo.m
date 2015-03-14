@@ -82,6 +82,18 @@
     
     if (self.appIcon == nil)
         self.appIcon = [NSImage imageNamed:@"defaultIcon"];
+    else
+    {
+        NSImage *temp = [self.appIcon copy];
+        self.appIcon = [NSImage imageWithSize:CGSizeMake(60, 60) flipped:0 drawingHandler:^BOOL(NSRect dstRect) {
+
+            NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:dstRect xRadius:13 yRadius:13];
+            [p addClip];
+            [temp drawInRect:dstRect];
+
+            return 1;
+        }];
+    }
 }
 
 +(NSArray*)allDeviceFolderUrl

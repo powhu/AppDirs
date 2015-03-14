@@ -20,6 +20,5 @@
 @property (nonatomic, strong) NSMutableDictionary *sandboxPaths;
 
 +(NSArray*)allAppInfo;
-+(NSArray*)allDeviceFolderUrl;
 
 @end
