@@ -26,10 +26,11 @@
         [temp addObject:app];
     }
     self.appArray = temp;
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"appName" ascending:1 selector:@selector(caseInsensitiveCompare:)];
+    [self.arrayController setSortDescriptors:@[sort]];
     
     self.arrayController.selectionIndexes = [NSIndexSet indexSet];
     [self.arrayController addObserver:self forKeyPath:@"selectionIndexes" options:NSKeyValueObservingOptionNew context:NULL];
-    
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -39,7 +40,7 @@
         NSPopover *popOver = [[NSPopover alloc] init];
         AppDetailVC *vc = [self.storyboard instantiateControllerWithIdentifier:@"AppDetailVC"];
         vc.popOver = popOver;
-        vc.appInfo = [self.appArray objectAtIndex:self.arrayController.selectionIndex];
+        vc.appInfo = [self.arrayController.arrangedObjects objectAtIndex:self.arrayController.selectionIndex];
         popOver.contentViewController = vc;
         popOver.behavior = NSPopoverBehaviorTransient;
         popOver.delegate = self;

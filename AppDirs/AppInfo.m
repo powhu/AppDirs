@@ -22,80 +22,6 @@
     return self;
 }
 
--(void)getInfoPlistInfo:(NSURL*)bundleURL
-{
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    NSURL *appURL;
-    NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtURL:bundleURL
-                                       includingPropertiesForKeys: nil
-                                                          options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
-                                                     errorHandler: nil];
-    while ((appURL = [dirEnum nextObject]))
-    {
-       
-        if ([[appURL.path lastPathComponent] rangeOfString: @".app"].location != NSNotFound)
-        {
-            NSURL *infoPlistURL = [appURL URLByAppendingPathComponent:@"info.plist"];
-            NSDictionary *info = [NSPropertyListSerialization propertyListWithData:[NSData dataWithContentsOfURL:infoPlistURL] options:NSPropertyListImmutable format:nil error:nil];
-            self.appName = ([info[@"CFBundleDisplayName"] length] > 0) ? info[@"CFBundleDisplayName"] : [[appURL.path lastPathComponent] stringByReplacingOccurrencesOfString:@".app" withString:@""];
-            self.appShortVersion = info[@"CFBundleShortVersionString"];
-            self.appVersion = info[@"CFBundleVersion"];
-            //Icon
-            [self getAppIcon:appURL];
-            
-            break;
-        }
-    }
-}
-
--(void)getAppIcon:(NSURL*)appURL
-{
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtURL:appURL
-                                       includingPropertiesForKeys: nil
-                                                          options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
-                                                     errorHandler: nil];
-    
-    for (NSURL *url in dirEnum)
-    {
-        NSString *fileName = [[url path] lastPathComponent];
-        if ([fileName rangeOfString:@"AppIcon"].location != NSNotFound)
-        {
-            if ([fileName rangeOfString:@"57x57"].location != NSNotFound)
-            {
-                self.appIcon = [[NSImage alloc] initByReferencingURL:url];
-                break;
-            }
-            else if ([fileName rangeOfString:@"60x60"].location != NSNotFound)
-            {
-                self.appIcon = [[NSImage alloc] initByReferencingURL:url];
-                break;
-            }
-            else if ([fileName rangeOfString:@"76x76"].location != NSNotFound)
-            {
-                self.appIcon = [[NSImage alloc] initByReferencingURL:url];
-                break;
-            }
-        }
-    }
-    
-    if (self.appIcon == nil)
-        self.appIcon = [NSImage imageNamed:@"defaultIcon"];
-    else
-    {
-        NSImage *temp = [self.appIcon copy];
-        self.appIcon = [NSImage imageWithSize:CGSizeMake(60, 60) flipped:0 drawingHandler:^BOOL(NSRect dstRect) {
-
-            NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:dstRect xRadius:13 yRadius:13];
-            [p addClip];
-            [temp drawInRect:dstRect];
-
-            return 1;
-        }];
-    }
-}
-
 +(NSArray*)allDeviceFolderUrl
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -168,7 +94,6 @@
                         [tempAppsDic setObject:app forKey:bundleID];
                         [appArray addObject:app];
                     }
-                    
                 }
             }
         }
@@ -176,5 +101,81 @@
     
     return appArray;
 }
+
+
+-(void)getInfoPlistInfo:(NSURL*)bundleURL
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSURL *appURL;
+    NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtURL:bundleURL
+                                       includingPropertiesForKeys: nil
+                                                          options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                                     errorHandler: nil];
+    while ((appURL = [dirEnum nextObject]))
+    {
+        
+        if ([[appURL.path lastPathComponent] rangeOfString: @".app"].location != NSNotFound)
+        {
+            NSURL *infoPlistURL = [appURL URLByAppendingPathComponent:@"info.plist"];
+            NSDictionary *info = [NSPropertyListSerialization propertyListWithData:[NSData dataWithContentsOfURL:infoPlistURL] options:NSPropertyListImmutable format:nil error:nil];
+            self.appName = ([info[@"CFBundleDisplayName"] length] > 0) ? info[@"CFBundleDisplayName"] : [[appURL.path lastPathComponent] stringByReplacingOccurrencesOfString:@".app" withString:@""];
+            self.appShortVersion = info[@"CFBundleShortVersionString"];
+            self.appVersion = info[@"CFBundleVersion"];
+            //Icon
+            [self getAppIcon:appURL];
+            
+            break;
+        }
+    }
+}
+
+-(void)getAppIcon:(NSURL*)appURL
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtURL:appURL
+                                       includingPropertiesForKeys: nil
+                                                          options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                                     errorHandler: nil];
+    
+    for (NSURL *url in dirEnum)
+    {
+        NSString *fileName = [[url path] lastPathComponent];
+        if ([fileName rangeOfString:@"AppIcon"].location != NSNotFound)
+        {
+            if ([fileName rangeOfString:@"60x60"].location != NSNotFound)
+            {
+                self.appIcon = [[NSImage alloc] initByReferencingURL:url];
+                break;
+            }
+            else if ([fileName rangeOfString:@"57x57"].location != NSNotFound)
+            {
+                self.appIcon = [[NSImage alloc] initByReferencingURL:url];
+                break;
+            }
+            else if ([fileName rangeOfString:@"76x76"].location != NSNotFound)
+            {
+                self.appIcon = [[NSImage alloc] initByReferencingURL:url];
+                break;
+            }
+        }
+    }
+    
+    if (self.appIcon == nil)
+        self.appIcon = [NSImage imageNamed:@"defaultIcon"];
+    else
+    {
+        NSImage *temp = [self.appIcon copy];
+        self.appIcon = [NSImage imageWithSize:CGSizeMake(60, 60) flipped:0 drawingHandler:^BOOL(NSRect dstRect) {
+            
+            NSBezierPath *p = [NSBezierPath bezierPathWithRoundedRect:dstRect xRadius:13 yRadius:13];
+            [p addClip];
+            [temp drawInRect:dstRect];
+            
+            return 1;
+        }];
+    }
+}
+
 
 @end

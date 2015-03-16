@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2F763F321AB2D221007E95A2 /* AppDetailVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F763F311AB2D221007E95A2 /* AppDetailVC.m */; };
-		2F763F351AB2EC97007E95A2 /* PHWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F763F341AB2EC97007E95A2 /* PHWindowController.m */; };
 		2F8C0B841AB2A0C300928CAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F8C0B831AB2A0C300928CAA /* AppDelegate.m */; };
 		2F8C0B861AB2A0C300928CAA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F8C0B851AB2A0C300928CAA /* main.m */; };
 		2F8C0B891AB2A0C300928CAA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F8C0B881AB2A0C300928CAA /* ViewController.m */; };
@@ -31,8 +30,6 @@
 /* Begin PBXFileReference section */
 		2F763F301AB2D221007E95A2 /* AppDetailVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDetailVC.h; sourceTree = "<group>"; };
 		2F763F311AB2D221007E95A2 /* AppDetailVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDetailVC.m; sourceTree = "<group>"; };
-		2F763F331AB2EC97007E95A2 /* PHWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHWindowController.h; sourceTree = "<group>"; };
-		2F763F341AB2EC97007E95A2 /* PHWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHWindowController.m; sourceTree = "<group>"; };
 		2F8C0B7D1AB2A0C300928CAA /* AppDirs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppDirs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F8C0B811AB2A0C300928CAA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F8C0B821AB2A0C300928CAA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -90,8 +87,6 @@
 			children = (
 				2F8C0B821AB2A0C300928CAA /* AppDelegate.h */,
 				2F8C0B831AB2A0C300928CAA /* AppDelegate.m */,
-				2F763F331AB2EC97007E95A2 /* PHWindowController.h */,
-				2F763F341AB2EC97007E95A2 /* PHWindowController.m */,
 				2F8C0B871AB2A0C300928CAA /* ViewController.h */,
 				2F8C0B881AB2A0C300928CAA /* ViewController.m */,
 				2F763F301AB2D221007E95A2 /* AppDetailVC.h */,
@@ -231,7 +226,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2F763F321AB2D221007E95A2 /* AppDetailVC.m in Sources */,
-				2F763F351AB2EC97007E95A2 /* PHWindowController.m in Sources */,
 				2F8C0B891AB2A0C300928CAA /* ViewController.m in Sources */,
 				2F8C0BA51AB2A48D00928CAA /* AppInfo.m in Sources */,
 				2F8C0B861AB2A0C300928CAA /* main.m in Sources */,
