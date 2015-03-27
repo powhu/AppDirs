@@ -649,13 +649,13 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
+                <windowController id="B8D-0N-5wS" customClass="MyWindowController" sceneMemberID="viewController">
                     <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
-                        <toolbar key="toolbar" implicitIdentifier="EB06225C-9CA8-4765-AFAC-8FF52525A60C" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="mGD-zt-38G">
+                        <toolbar key="toolbar" implicitIdentifier="EB06225C-9CA8-4765-AFAC-8FF52525A60C" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconOnly" sizeMode="regular" id="mGD-zt-38G">
                             <allowedToolbarItems>
                                 <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="6Vs-Tr-hPl"/>
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="cvg-dH-XMO"/>
@@ -681,10 +681,27 @@
                                         </searchFieldCell>
                                     </searchField>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="91A63DB5-CC7A-4E59-93E2-DFDB31BA4638" label="Reload" paletteLabel="Reload" image="NSRefreshTemplate" id="A3I-Cu-mIv">
+                                    <nil key="toolTip"/>
+                                    <size key="minSize" width="40" height="23"/>
+                                    <size key="maxSize" width="40" height="26"/>
+                                    <button key="view" verticalHuggingPriority="750" id="M3G-4e-9jy">
+                                        <rect key="frame" x="0.0" y="14" width="40" height="26"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="NSRefreshTemplate" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="yxX-QF-W4c">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <connections>
+                                        <action selector="reload:" target="B8D-0N-5wS" id="Uwi-a1-Bmo"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="cvg-dH-XMO"/>
                                 <toolbarItem reference="MW5-Fo-Hae"/>
+                                <toolbarItem reference="A3I-Cu-mIv"/>
                             </defaultToolbarItems>
                         </toolbar>
                     </window>
@@ -753,7 +770,7 @@
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <arrayController id="Nqw-SJ-L4q">
+                <arrayController avoidsEmptySelection="NO" id="Nqw-SJ-L4q">
                     <connections>
                         <binding destination="XfG-lQ-9wD" name="contentArray" keyPath="appArray" id="UFR-W3-4aM"/>
                     </connections>
@@ -925,5 +942,6 @@
     </scenes>
     <resources>
         <image name="NSActionTemplate" width="14" height="14"/>
+        <image name="NSRefreshTemplate" width="11" height="15"/>
     </resources>
 </document>

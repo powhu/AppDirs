@@ -10,6 +10,16 @@
 #import "AppInfo.h"
 #import "AppDetailVC.h"
 
+@implementation MyWindowController
+
+- (IBAction)reload:(id)sender
+{
+    ViewController *vc = (ViewController*)self.window.contentViewController;
+    [vc getApps];
+}
+
+@end
+
 @implementation ViewController
 
 - (void)viewDidLoad
@@ -19,18 +29,19 @@
     NSCollectionViewItem *cell = [self.storyboard instantiateControllerWithIdentifier:@"cell"];
     self.collectionView.itemPrototype = cell;
     
-    NSMutableArray *temp = @[].mutableCopy;
-    
-    for (AppInfo *app in [AppInfo allAppInfo])
-    {
-        [temp addObject:app];
-    }
-    self.appArray = temp;
+    [self getApps];
     NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"appName" ascending:1 selector:@selector(caseInsensitiveCompare:)];
     [self.arrayController setSortDescriptors:@[sort]];
     
-    self.arrayController.selectionIndexes = [NSIndexSet indexSet];
     [self.arrayController addObserver:self forKeyPath:@"selectionIndexes" options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+-(void)getApps
+{
+    NSMutableArray *temp = @[].mutableCopy;
+    for (AppInfo *app in [AppInfo allAppInfo])
+        [temp addObject:app];
+    self.appArray = temp;
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

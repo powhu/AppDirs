@@ -19,6 +19,7 @@
         self.sandboxPaths = @{}.mutableCopy;
         self.bundlePaths = @{}.mutableCopy;
     }
+    
     return self;
 }
 
@@ -27,22 +28,15 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *libraryDirURL = [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] firstObject];
     NSMutableArray *deviceList = [NSMutableArray array];
-    
-    if (libraryDirURL != nil)
+    libraryDirURL = [libraryDirURL URLByAppendingPathComponent:@"Developer/CoreSimulator/Devices"];
+    if ([fileManager fileExistsAtPath:libraryDirURL.path])
     {
-        libraryDirURL = [libraryDirURL URLByAppendingPathComponent: @"Developer/CoreSimulator/Devices"];
-        
-        NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtURL: libraryDirURL
-                                           includingPropertiesForKeys: nil
-                                                              options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
-                                                         errorHandler: nil];
-        NSURL* baseInfoURL;
-        
-        while ((baseInfoURL = [dirEnum nextObject]))
-        {
-            [deviceList addObject:baseInfoURL];
-        }
-        
+        NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtURL:libraryDirURL
+                                           includingPropertiesForKeys:nil
+                                                              options:NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                                         errorHandler:nil];
+        for (NSURL *url in dirEnum)
+            [deviceList addObject:url];
     }
     
     return deviceList;
@@ -56,7 +50,7 @@
     
     for (NSURL *url in [AppInfo allDeviceFolderUrl])
     {
-        //Device info
+        //device.plist
         NSURL *devicePlistURL = [url URLByAppendingPathComponent:@"device.plist"];
         NSData *deviceData = [NSData dataWithContentsOfURL:devicePlistURL];
         NSDictionary *deviceInfo = [NSPropertyListSerialization propertyListWithData:deviceData options:NSPropertyListImmutable format:nil error:nil];
@@ -64,12 +58,11 @@
         NSString *osVersion = [[[deviceInfo[@"runtime"] componentsSeparatedByString:@"."].lastObject stringByReplacingOccurrencesOfString:@"iOS-" withString:@""] stringByReplacingOccurrencesOfString:@"-" withString:@"."];
         NSString *deviceWithOs = [deviceName stringByAppendingFormat:@" (%@)",osVersion];
         
-        //Device user apps
+        //LastLaunchServicesMap.plist
         NSURL *launchMapInfoURL = [url URLByAppendingPathComponent: @"data/Library/MobileInstallation/LastLaunchServicesMap.plist"];
-        if (launchMapInfoURL != nil && [fileManager fileExistsAtPath: [launchMapInfoURL path]])
+        if ([fileManager fileExistsAtPath:[launchMapInfoURL path]])
         {
-            NSData *plistData = [NSData dataWithContentsOfURL: launchMapInfoURL];
-            NSDictionary *launchInfo = [NSPropertyListSerialization propertyListWithData: plistData options: NSPropertyListImmutable format: nil error: nil];
+            NSDictionary *launchInfo = [NSPropertyListSerialization propertyListWithData:[NSData dataWithContentsOfURL:launchMapInfoURL] options:NSPropertyListImmutable format:nil error: nil];
             NSDictionary *userInfo = launchInfo[@"User"];
             
             for (NSString *bundleID in userInfo.allKeys)
@@ -78,7 +71,8 @@
                 if ([tempAppsDic objectForKey:bundleID])
                 {
                     AppInfo *app = [tempAppsDic objectForKey:bundleID];
-                    [app.sandboxPaths setObject:appInfo[@"Container"] forKey:deviceWithOs];
+                    if ([fileManager fileExistsAtPath:appInfo[@"Container"]])
+                        [app.sandboxPaths setObject:appInfo[@"Container"] forKey:deviceWithOs];
                     [app.bundlePaths setObject:appInfo[@"BundleContainer"] forKey:deviceWithOs];
                 }
                 else
@@ -86,9 +80,10 @@
                     AppInfo *app = [AppInfo new];
                     app.bundleID = bundleID;
                     [app getInfoPlistInfo:[NSURL URLWithString:appInfo[@"BundleContainer"]]];
-                    if (app.appName.length>0)
+                    if (app.appName.length > 0)
                     {
-                        [app.sandboxPaths setObject:appInfo[@"Container"] forKey:deviceWithOs];
+                        if ([fileManager fileExistsAtPath:appInfo[@"Container"]])
+                            [app.sandboxPaths setObject:appInfo[@"Container"] forKey:deviceWithOs];
                         [app.bundlePaths setObject:appInfo[@"BundleContainer"] forKey:deviceWithOs];
                         
                         [tempAppsDic setObject:app forKey:bundleID];
@@ -96,6 +91,49 @@
                     }
                 }
             }
+            
+            //applicationState.plist
+            NSURL *appStateUrl = [url URLByAppendingPathComponent:@"data/Library/BackBoard/applicationState.plist"];
+            if ([fileManager fileExistsAtPath:appStateUrl.path])
+            {
+                NSDictionary *appStateDic = [NSPropertyListSerialization propertyListWithData:[NSData dataWithContentsOfURL:appStateUrl] options:NSPropertyListImmutable format:nil error: nil];
+                
+                for (NSString *bundleID in appStateDic.allKeys)
+                {
+                    if ([bundleID rangeOfString:@"com.apple"].location == NSNotFound)
+                    {
+                        NSDictionary *appInfo = appStateDic[bundleID][@"compatibilityInfo"];
+                        NSString *bundlePath = [appInfo[@"bundlePath"] stringByDeletingLastPathComponent];
+                        if (bundlePath)
+                        {
+                            if ([tempAppsDic objectForKey:bundleID])
+                            {
+                                AppInfo *app = [tempAppsDic objectForKey:bundleID];
+                                if ([fileManager fileExistsAtPath:appInfo[@"sandboxPath"]])
+                                    [app.sandboxPaths setObject:appInfo[@"sandboxPath"] forKey:deviceWithOs];
+                                [app.bundlePaths setObject:bundlePath  forKey:deviceWithOs];
+                            }
+                            else
+                            {
+                                AppInfo *app = [AppInfo new];
+                                app.bundleID = bundleID;
+                                [app getInfoPlistInfo:[NSURL URLWithString:bundlePath]];
+                                if (app.appName.length > 0)
+                                {
+                                    if ([fileManager fileExistsAtPath:appInfo[@"sandboxPath"]])
+                                        [app.sandboxPaths setObject:appInfo[@"sandboxPath"] forKey:deviceWithOs];
+                                    [app.bundlePaths setObject:bundlePath forKey:deviceWithOs];
+                                    
+                                    [tempAppsDic setObject:app forKey:bundleID];
+                                    [appArray addObject:app];
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            }
+            
         }
     }
     
@@ -107,15 +145,13 @@
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    NSURL *appURL;
     NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtURL:bundleURL
                                        includingPropertiesForKeys: nil
                                                           options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
                                                      errorHandler: nil];
-    while ((appURL = [dirEnum nextObject]))
+    for (NSURL *appURL in dirEnum)
     {
-        
-        if ([[appURL.path lastPathComponent] rangeOfString: @".app"].location != NSNotFound)
+        if ([[appURL.path lastPathComponent] rangeOfString:@".app"].location != NSNotFound)
         {
             NSURL *infoPlistURL = [appURL URLByAppendingPathComponent:@"info.plist"];
             NSDictionary *info = [NSPropertyListSerialization propertyListWithData:[NSData dataWithContentsOfURL:infoPlistURL] options:NSPropertyListImmutable format:nil error:nil];
@@ -134,9 +170,9 @@
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtURL:appURL
-                                       includingPropertiesForKeys: nil
-                                                          options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
-                                                     errorHandler: nil];
+                                       includingPropertiesForKeys:nil
+                                                          options:NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                                     errorHandler:nil];
     
     for (NSURL *url in dirEnum)
     {

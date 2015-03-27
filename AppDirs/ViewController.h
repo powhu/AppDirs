@@ -13,6 +13,9 @@
 @property (strong) IBOutlet NSCollectionView *collectionView;
 @property (nonatomic,strong) NSMutableArray *appArray;
 @property (strong) IBOutlet NSArrayController *arrayController;
-
+-(void)getApps;
 @end
 
+@interface MyWindowController : NSWindowController
+
+@end
